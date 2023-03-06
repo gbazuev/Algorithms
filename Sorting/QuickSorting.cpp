@@ -1,22 +1,21 @@
 #include <iostream>
 #include <vector>
 
-std::vector<int> quick_sort(std::vector<int>& vector, size_t begin, size_t end)
+void quick_sort(std::vector<int> *vector, int begin, int end)
 {
-    size_t local_begin = begin;
-    size_t local_end = end;
-    int pivot = vector.at((local_begin + local_end) / 2);
-
-    while (local_begin < local_end)
+    int local_begin = begin;
+    int local_end = end;
+    int pivot = vector->at((begin + end) / 2);
+    while (local_begin <= local_end)
     {
-      while (vector.at(local_begin) < pivot)  {
+      while (vector->at(local_begin) < pivot)  {
         local_begin++;
       }
-      while (vector.at(local_end) > pivot)  {
+      while (vector->at(local_end) > pivot)  {
         local_end--;
       }
-      if (local_begin <= end) {
-        std::swap(vector.at(local_begin++), vector.at(local_end--));
+      if (local_begin <= local_end) {
+        std::swap(vector->at(local_begin++), vector->at(local_end--));
       }
     }
 
@@ -36,7 +35,7 @@ int main()
         std::cout<<val<<"  ";
     }
 
-    vector = quick_sort(vector);
+    quick_sort(&vector, 0, vector.size() - 1);
     
     std::cout<<"\nSorted vector: ";
     for (const auto& val : vector)  {
