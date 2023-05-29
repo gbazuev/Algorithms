@@ -1,44 +1,40 @@
 #include <iostream>	
 #include <vector>
 
-int binary_search_non_recursive(const std::vector<int> vector, int findable)
+int binary_search_non_recursive(const std::vector<int>& vector, const int& target) noexcept
 {
 	int begin = 0;
 	int end = vector.size() - 1;
 
 	while (begin <= end)
 	{
-		int mid = (end + begin) / 2;
-		int current_element = vector[mid];
+		const int mid = (end + begin) / 2;
 
-		if (current_element == findable)
-		{
+		if (vector[mid] == target)	{
 			return mid;
 		}
-
-		else if (current_element > findable)
-		{
+		else if (vector[mid] > target)	{
 			end = mid - 1;
 		}
-		else
-		{
+		else	{
 			begin = mid + 1;
 		}
 	}
 	return -1;
 }
 
-int binary_search_recursive(const std::vector<int> vector, int findable, int begin, int end)
+int binary_search_recursive(const std::vector<int>& vector, const int& target, const int begin, const int end) noexcept
 {
-	if (vector.at((begin + end) / 2) == findable)	{
-		return (begin + end) / 2;
+	const int middle_index = (begin + end) / 2;
+
+	if (vector.at(middle_index) == target)	{
+		return middle_index;
 	}
-	
-	if (vector.at((end + begin) / 2) > findable)	{
-		return binary_search_recursive(vector, findable, begin, --end);
+	else if (vector.at(middle_index) > target)	{
+		return binary_search_recursive(vector, target, begin, middle_index - 1);
 	}
 	else {
-		return binary_search_recursive(vector, findable, --begin, end);
+		return binary_search_recursive(vector, target, middle_index + 1, end);
 	}
 }
 
