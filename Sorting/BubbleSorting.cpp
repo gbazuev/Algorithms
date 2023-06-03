@@ -14,9 +14,8 @@ void bubble_sorting(std::vector<int>& vector) noexcept
                 is_sorted = false;
             }
         }
+        if (is_sorted)  return;
     }
-
-    if (is_sorted)  return;
 }
 
 int main(int argc, const char** argv)
