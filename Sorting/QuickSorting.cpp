@@ -1,33 +1,33 @@
+#include <cstddef>
 #include <iostream>
 #include <vector>
 
-void quick_sort(std::vector<int> *vector, int begin, int end)
+void quick_sorting(std::vector<int>& vector, const std::size_t begin, const std::size_t end) noexcept
 {
-    int local_begin = begin;
-    int local_end = end;
-    int pivot = vector->at((begin + end) / 2);
+    std::size_t local_begin = begin, local_end = end;
+    int pivot = vector[(begin + end) / 2];
     while (local_begin <= local_end)
     {
-      while (vector->at(local_begin) < pivot)  {
+      while (vector[local_begin] < pivot)  {
         local_begin++;
       }
-      while (vector->at(local_end) > pivot)  {
+      while (vector[local_end] > pivot)  {
         local_end--;
       }
       if (local_begin <= local_end) {
-        std::swap(vector->at(local_begin++), vector->at(local_end--));
+        std::swap(vector[local_begin++], vector[local_end--]);
       }
     }
 
     if (local_begin < end)  {
-      quick_sort(vector, local_begin, end);
+      quick_sorting(vector, local_begin, end);
     }
     if (local_end > begin)  {
-      quick_sort(vector, begin, local_end);
+      quick_sorting(vector, begin, local_end);
     }
 }
 
-int main()
+int main(int argc, const char** argv)
 {
     std::vector<int> vector = {8, 44, 21, 2, 34, 5, 6, 90, 121, 888};
     std::cout<<"Not sorted vector: ";
@@ -35,7 +35,7 @@ int main()
         std::cout<<val<<"  ";
     }
 
-    quick_sort(&vector, 0, vector.size() - 1);
+    quick_sorting(vector, 0, vector.size() - 1);
     
     std::cout<<"\nSorted vector: ";
     for (const auto& val : vector)  {
