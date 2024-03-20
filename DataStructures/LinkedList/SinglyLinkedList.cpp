@@ -33,11 +33,11 @@ class SinglyLinkedList {
 
 public:
 
-    SinglyLinkedList() : head(nullptr), capacity(0u) {}; 
-    explicit SinglyLinkedList(SinglyLinkedList const &other) : head(other.head), capacity(other.capacity) {};
+    SinglyLinkedList() : head(nullptr), tail(nullptr), capacity(0u) {}; 
+    explicit SinglyLinkedList(SinglyLinkedList const &other) : head(other.head), tail(other.tail), capacity(other.capacity) {};
 
-    bool is_empty() const;
-    std::size_t size() const;
+    inline bool is_empty() const;
+    inline std::size_t size() const;
 
     void push_front(T const value);
     void push_back(T const value);
@@ -51,34 +51,36 @@ public:
 
 private:
     Node *head;
+    Node *tail;
     std::size_t capacity;
 
-    void fill_head(T const value);
+    void init_push(T const value);
 };
 
 template<typename T>
-bool SinglyLinkedList<T>::is_empty() const {
+void SinglyLinkedList<T>::init_push(T const value)   {
+    capacity++;
+
+    head = new Node();
+    head->value = value;
+    head->next = nullptr;
+    tail = head;
+}
+
+template<typename T>
+inline bool SinglyLinkedList<T>::is_empty() const {
     return capacity == 0;
 }
 
 template<typename T>
-std::size_t SinglyLinkedList<T>::size() const {
+inline std::size_t SinglyLinkedList<T>::size() const {
     return capacity;
-}
-
-template<typename T>
-void SinglyLinkedList<T>::fill_head(T const value)
-{
-    capacity++;
-    head = new Node();
-    head->value = value;
-    head->next = nullptr;
 }
 
 template<typename T>
 void SinglyLinkedList<T>::push_front(T const value)    {
     if (is_empty()) {
-        fill_head(value);
+        init_push(value);
         return;
     }
     
@@ -94,22 +96,18 @@ template<typename T>
 void SinglyLinkedList<T>::push_back(T const value)
 { 
     if (is_empty()) {
-        fill_head(value);
+        init_push(value);
         return;
     }
     
     capacity++;
 
-    Node *headiter = head;
-    while (headiter->next)  {
-        headiter = headiter->next;
-    }
-
     Node *node = new Node();
     node->value = value;
     node->next = nullptr;
 
-    headiter->next = node;
+    tail->next = node;
+    tail = node;
 }
 
 template<typename T>
@@ -122,9 +120,9 @@ void SinglyLinkedList<T>::pop_front()
     
     capacity--;
 
-    Node *temp_head = head->next;
+    Node *temp = head->next;
     delete head;
-    head = temp_head;
+    head = temp;
 }
 
 template<typename T>
@@ -136,22 +134,15 @@ void SinglyLinkedList<T>::pop_back()
     }
     
     capacity--;
-
-    Node *headiter = head;
-    Node *temp = nullptr;
-
-    while (headiter)    {
-        if (headiter->next) {
-            if (headiter->next->next == nullptr)    {
-                temp = headiter->next;
-                break;
-            }
-            headiter = headiter->next;
-        }
+    
+    Node *temp = head;
+    while (temp->next != tail)   {
+        temp = temp->next;
     }
-
-    headiter->next = nullptr;
-    delete temp;
+    
+    temp->next = nullptr;
+    delete tail;
+    tail = temp;
 }
 
 template<typename T>
@@ -180,9 +171,13 @@ int main(int argc, const char * const argv[])
     SinglyLinkedList<int> list;
     list.push_back(1);
     list.push_back(2);
-    list.push_back(3);
+    list.push_back(4);
+    list.push_front(88);
+    list.push_front(111);
+    list.push_back(12);
     
     list.pop_back();
+    list.pop_front();
 
     for (auto i = 0u; i < list.size(); ++i) {
         std::cout << list[i] << "\n";
