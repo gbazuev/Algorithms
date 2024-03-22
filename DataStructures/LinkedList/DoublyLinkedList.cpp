@@ -21,19 +21,21 @@
  *              end()   { retunst list end }
  */
 
+#include <cstdlib>
 #include <iostream>
 
 template<typename T>
-class SinglyLinkedList {
+class DoublyLinkedList {
 
     struct Node {
         T value;
         Node *next;
+        Node *prev;
     };
 
 public:
 
-    SinglyLinkedList() : head(nullptr), tail(nullptr), capacity(0u) {}; 
+    DoublyLinkedList() : head(nullptr), tail(nullptr), capacity(0u) {}; 
     //explicit SinglyLinkedList(SinglyLinkedList const &other) : head(other.head), tail(other.tail), capacity(other.capacity) {};
 
     inline bool is_empty() const;
@@ -50,7 +52,7 @@ public:
     //T at(std::size_t const index) const;
     T& operator[](std::size_t const index);
    
-    ~SinglyLinkedList();
+    ~DoublyLinkedList();
 
 private:
     Node *head;
@@ -61,27 +63,28 @@ private:
 };
 
 template<typename T>
-void SinglyLinkedList<T>::init_push(T const &value)   {
+void DoublyLinkedList<T>::init_push(T const &value)   {
     capacity++;
 
-    head = new Node();
+    head = (Node*) malloc(sizeof *head);
     head->value = value;
     head->next = nullptr;
+    head->prev = nullptr;
     tail = head;
 }
 
 template<typename T>
-inline bool SinglyLinkedList<T>::is_empty() const {
+inline bool DoublyLinkedList<T>::is_empty() const {
     return capacity == 0;
 }
 
 template<typename T>
-inline std::size_t SinglyLinkedList<T>::size() const {
+inline std::size_t DoublyLinkedList<T>::size() const {
     return capacity;
 }
 
 template<typename T>
-void SinglyLinkedList<T>::push_front(T const value)    {
+void DoublyLinkedList<T>::push_front(T const value)    {
     if (is_empty()) {
         init_push(value);
         return;
@@ -89,14 +92,15 @@ void SinglyLinkedList<T>::push_front(T const value)    {
     
     capacity++;
 
-    Node *node = new Node();
+    Node *node = (Node*) malloc(sizeof *node);
     node->value = value;
     node->next = head;
+    node->prev = nullptr;
     head = node;
 }
 
 template<typename T>
-void SinglyLinkedList<T>::push_back(T const value)
+void DoublyLinkedList<T>::push_back(T const value)
 { 
     if (is_empty()) {
         init_push(value);
@@ -105,16 +109,17 @@ void SinglyLinkedList<T>::push_back(T const value)
     
     capacity++;
 
-    Node *node = new Node();
+    Node *node = (Node*) malloc(sizeof *node);
     node->value = value;
     node->next = nullptr;
+    node->prev = tail;
 
     tail->next = node;
     tail = node;
 }
 
 template<typename T>
-void SinglyLinkedList<T>::pop_front()
+void DoublyLinkedList<T>::pop_front()
 {
     if (is_empty()) {
         return;
@@ -124,12 +129,12 @@ void SinglyLinkedList<T>::pop_front()
     capacity--;
 
     Node *temp = head->next;
-    delete head;
+    free(head);
     head = temp;
 }
 
 template<typename T>
-void SinglyLinkedList<T>::pop_back()
+void DoublyLinkedList<T>::pop_back()
 {
     if (is_empty()) {
         return;
@@ -144,12 +149,12 @@ void SinglyLinkedList<T>::pop_back()
     }
     
     temp->next = nullptr;
-    delete tail;
+    free(tail);
     tail = temp;
 }
 
 template<typename T>
-T& SinglyLinkedList<T>::operator[](std::size_t const index)  {
+T& DoublyLinkedList<T>::operator[](std::size_t const index)  {
     Node *beginiter = head;
 
     for (std::size_t i = 0u; i < index; ++i) {
@@ -161,29 +166,29 @@ T& SinglyLinkedList<T>::operator[](std::size_t const index)  {
 
 //TODO: if list is empty, then std::expected<T, std::runtime_error> or throw exception
 template<typename T>
-T SinglyLinkedList<T>::front() const {
+T DoublyLinkedList<T>::front() const {
     return head->value;
 }
 
 //TODO: if list is empty, then std::expected<T, std::runtime_error> or throw exception
 template<typename T>
-T SinglyLinkedList<T>::back() const {
+T DoublyLinkedList<T>::back() const {
     return tail->value;
 }
 
 template<typename T>
-SinglyLinkedList<T>::~SinglyLinkedList()
+DoublyLinkedList<T>::~DoublyLinkedList()
 {
     while (head)   {
         Node *next = head->next;
-        delete head;
+        free(head);
         head = next;
     }
 }
 
 int main(int argc, const char * const argv[])
 {
-    SinglyLinkedList<int> list;
+    DoublyLinkedList<int> list;
     list.push_back(1);
     list.push_back(2);
     list.push_back(4);
