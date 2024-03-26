@@ -2,20 +2,21 @@
 #include <stdexcept>
 
 template<typename T>
-class SinglyLinkedList {
-
-    struct Node {
+class LinkedList 
+{
+    struct Node 
+    {
         T value;
         Node *next;
     };
 
 public:
 
-    SinglyLinkedList() : head(nullptr), tail(nullptr), capacity(0u) {}; 
+    LinkedList() : head(nullptr), tail(nullptr), capacity(0u) {}; 
     //explicit SinglyLinkedList(SinglyLinkedList const &other) : head(other.head), tail(other.tail), capacity(other.capacity) {};
 
-    inline bool is_empty() const;
-    inline std::size_t size() const;
+    inline bool is_empty() const noexcept;
+    inline std::size_t size() const noexcept;
 
     void push_front(T const value);
     void push_back(T const value);
@@ -28,7 +29,7 @@ public:
     //T at(std::size_t const index) const;
     T& operator[](std::size_t const index);
    
-    ~SinglyLinkedList();
+    ~LinkedList();
 
 private:
     Node *head;
@@ -39,31 +40,35 @@ private:
 };
 
 template<typename T>
-void SinglyLinkedList<T>::init_push(T const &value)   {
+void LinkedList<T>::init_push(T const &value)   
+{
     head = static_cast<Node*>(std::malloc(sizeof *head));
 
     if (head == nullptr)    {
         throw std::bad_alloc();
     }
 
-    capacity++;
     head->value = value;
     head->next = nullptr;
     tail = head;
+    capacity++;
 }
 
 template<typename T>
-inline bool SinglyLinkedList<T>::is_empty() const {
+inline bool LinkedList<T>::is_empty() const noexcept 
+{
     return capacity == 0;
 }
 
 template<typename T>
-inline std::size_t SinglyLinkedList<T>::size() const {
+inline std::size_t LinkedList<T>::size() const noexcept 
+{
     return capacity;
 }
 
 template<typename T>
-void SinglyLinkedList<T>::push_front(T const value)    {
+void LinkedList<T>::push_front(T const value)    
+{
     if (is_empty()) {
         init_push(value);
         return;
@@ -75,14 +80,14 @@ void SinglyLinkedList<T>::push_front(T const value)    {
         throw std::bad_alloc();
     }
 
-    capacity++;
     node->value = value;
     node->next = head;
     head = node;
+    capacity++;
 }
 
 template<typename T>
-void SinglyLinkedList<T>::push_back(T const value)
+void LinkedList<T>::push_back(T const value)
 { 
     if (is_empty()) {
         init_push(value);
@@ -95,37 +100,35 @@ void SinglyLinkedList<T>::push_back(T const value)
         throw std::bad_alloc();
     }
 
-    capacity++;
     node->value = value;
     node->next = nullptr;
-
     tail->next = node;
     tail = node;
+    capacity++;
 }
 
 template<typename T>
-void SinglyLinkedList<T>::pop_front()
+void LinkedList<T>::pop_front()
 {
     if (is_empty()) {
         throw std::runtime_error("List is empty!\n");
     }
     
-    capacity--;
     Node *temp = head->next;
     free(head);
     head = temp;
+    capacity--;
 }
 
 template<typename T>
-void SinglyLinkedList<T>::pop_back()
+void LinkedList<T>::pop_back()
 {
     if (is_empty()) {
         throw std::runtime_error("List is empty!\n");
-    }
     
-    capacity--;
-    Node *temp = head;
+    }
 
+    Node *temp = head;
     while (temp->next != tail)   {
         temp = temp->next;
     }
@@ -133,10 +136,12 @@ void SinglyLinkedList<T>::pop_back()
     temp->next = nullptr;
     free(tail);
     tail = temp;
+    capacity--;
 }
 
 template<typename T>
-T& SinglyLinkedList<T>::operator[](std::size_t const index)  {
+T& LinkedList<T>::operator[](std::size_t const index)  
+{
     Node *iter = head;
 
     for (std::size_t i = 0u; i < index; ++i) {
@@ -148,7 +153,8 @@ T& SinglyLinkedList<T>::operator[](std::size_t const index)  {
 
 //TODO: if list is empty, then std::expected<T, std::runtime_error> or throw exception
 template<typename T>
-T SinglyLinkedList<T>::front() const {
+T LinkedList<T>::front() const 
+{
     if (is_empty()) {
         throw std::runtime_error("List is empty!\n");
     }
@@ -158,7 +164,8 @@ T SinglyLinkedList<T>::front() const {
 
 //TODO: if list is empty, then std::expected<T, std::runtime_error> or throw exception
 template<typename T>
-T SinglyLinkedList<T>::back() const {
+T LinkedList<T>::back() const 
+{
     if (is_empty()) {
         throw std::runtime_error("List is empty!\n");
     }
@@ -167,7 +174,7 @@ T SinglyLinkedList<T>::back() const {
 }
 
 template<typename T>
-SinglyLinkedList<T>::~SinglyLinkedList()
+LinkedList<T>::~LinkedList()
 {
     while (head)   {
         Node *next = head->next;
@@ -178,7 +185,7 @@ SinglyLinkedList<T>::~SinglyLinkedList()
 
 int main(int argc, const char * const argv[])
 {
-    SinglyLinkedList<int> list;
+    LinkedList<int> list;
     list.push_back(1);
     list.push_back(2);
     list.push_back(4);
