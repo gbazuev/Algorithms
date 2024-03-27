@@ -19,6 +19,9 @@ public:
     inline bool is_empty() const noexcept;
     inline std::size_t size() const noexcept;
 
+    void push(T const value, std::size_t const pos);
+    void pop(std::size_t const pos);
+
     void push_front(T const value);
     void push_back(T const value);
     void pop_front();
@@ -27,7 +30,7 @@ public:
     inline T front() const;
     inline T back() const;
 
-    //T at(std::size_t const index) const;
+    T at(std::size_t const index) const;
     T& operator[](std::size_t const index);
    
     ~LinkedList();
@@ -66,6 +69,76 @@ template<typename T>
 inline std::size_t LinkedList<T>::size() const noexcept
 {
     return capacity;
+}
+
+template<typename T>
+void LinkedList<T>::push(T const value, std::size_t const pos)
+{
+    if (pos < 0 || pos > capacity)  {
+        throw std::overflow_error("pos < 0 or pos > list capacity!");
+    }
+
+    if (pos == capacity || capacity == 0)    {
+        push_back(value);
+    }
+
+    else if (pos == 0)  {
+        push_front(value);
+    }
+
+    else {
+        Node *prev = head;
+        Node *next = head->next;
+        Node *node = static_cast<Node*>(std::malloc(sizeof *node));
+
+        if (node == nullptr)    {
+            throw std::bad_alloc();
+        }
+
+        for (std::size_t i = 0; i < pos; ++i)   {
+             prev = prev->next;
+             next = next->next;
+        }
+        
+        node->value = value;
+        node->prev = prev;
+        node->next = next;
+        prev->next = node;
+        next->prev = node;
+        capacity++;
+    }
+    
+}
+
+template<typename T>
+void LinkedList<T>::pop(std::size_t const pos)
+{
+    if (pos < 0 || pos >= capacity) {
+        throw std::overflow_error("pos < 0 or pos > capacity!");
+    }
+
+    if (pos == capacity - 1)    {
+        pop_back();
+    }
+
+    else if (pos == 0)  {
+        pop_front();
+    }
+
+    else {
+        Node *node = head;
+
+        for (std::size_t i = 0; i < pos; ++i)   {
+        node = node->next;
+        }
+
+        Node *prev = node->prev;
+        Node *next = node->next;
+        prev->next = next;
+        next->prev = prev;
+        free(node);
+        capacity--;
+    }
 }
 
 template<typename T>
@@ -135,6 +208,21 @@ void LinkedList<T>::pop_back()
 }
 
 template<typename T>
+T LinkedList<T>::at(std::size_t const index) const
+{
+    if (index < 0 || index > capacity)  {
+        throw std::overflow_error("Index < or > list capacity!");
+    }
+
+    Node *iter = head;
+    for (std::size_t i = 0; i < index; ++i) {
+        iter = iter->next;
+    }
+
+    return iter->value;
+}
+
+template<typename T>
 T& LinkedList<T>::operator[](std::size_t const index)
 {
     Node *iter = head;
@@ -190,6 +278,9 @@ int main(int argc, const char * const argv[])
     
     list.pop_back();
     list.pop_front();
+    
+    list.push(88149, 2);
+    list.pop(3);
 
     for (auto i = 0u; i < list.size(); ++i) {
         std::cout << list[i] << "\n";
