@@ -1,5 +1,4 @@
 #include <iostream>
-#include <new>
 #include <stdexcept>
 
 template<typename T>
@@ -29,7 +28,6 @@ public:
     inline T front() const;
     inline T back() const;
 
-    T at(std::size_t const index) const;
     T& operator[](std::size_t const index);
    
     ~LinkedList();
@@ -45,11 +43,7 @@ private:
 template<typename T>
 void LinkedList<T>::init_push(T const &value)   
 {
-    head = static_cast<Node*>(std::malloc(sizeof *head));
-
-    if (head == nullptr)    {
-        throw std::bad_alloc();
-    }
+    head = new Node;
 
     head->value = value;
     head->next = nullptr;
@@ -73,7 +67,7 @@ template<typename T>
 void LinkedList<T>::push(T const value, std::size_t const pos)
 {
     if (pos < 0 || pos > capacity)  {
-        throw std::overflow_error("pos < or > list capacity!");
+        throw std::runtime_error("incorrect index!");
     }
 
     if (pos == capacity || capacity == 0)    {
@@ -86,13 +80,9 @@ void LinkedList<T>::push(T const value, std::size_t const pos)
 
     else {
         Node *prev = head;
-        Node *node = static_cast<Node*>(std::malloc(sizeof *node));
+        Node *node = new Node;
 
-        if (node == nullptr)    {
-            throw std::bad_alloc();
-        }
-
-        for (std::size_t i = 0; i < pos; ++i)   {
+        for (std::size_t i = 0; i < pos - 1; ++i)   {
             prev = prev->next;
         }
         
@@ -108,7 +98,7 @@ template<typename T>
 void LinkedList<T>::pop(std::size_t const pos)
 {
     if (pos < 0 || pos >= capacity) {
-        throw std::overflow_error("pos < 0 or pos > capacity!");
+        throw std::runtime_error("incorrect index!");
     }
 
     if (pos == capacity - 1)    {
@@ -141,11 +131,7 @@ void LinkedList<T>::push_front(T const value)
         return;
     }
     
-    Node *node = static_cast<Node*>(std::malloc(sizeof *node));
-
-    if (node == nullptr)    {
-        throw std::bad_alloc();
-    }
+    Node *node = new Node;
 
     node->value = value;
     node->next = head;
@@ -161,11 +147,7 @@ void LinkedList<T>::push_back(T const value)
         return;
     }
 
-    Node *node = static_cast<Node*>(std::malloc(sizeof *node));
-
-    if (node == nullptr)    {
-        throw std::bad_alloc();
-    }
+    Node *node = new Node;
 
     node->value = value;
     node->next = nullptr;
@@ -207,23 +189,11 @@ void LinkedList<T>::pop_back()
 }
 
 template<typename T>
-T LinkedList<T>::at(std::size_t const index) const
-{
-    if (index < 0 || index > capacity)  {
-        throw std::overflow_error("Index < or > list capacity!");
-    }
-
-    Node *iter = head;
-    for (std::size_t i = 0; i < index; ++i) {
-        iter = iter->next;
-    }
-
-    return iter->value;
-}
-
-template<typename T>
 T& LinkedList<T>::operator[](std::size_t const index)  
 {
+    if (index < 0 || index >= capacity) {
+        throw std::runtime_error("incorrect index!");
+    }
     Node *iter = head;
 
     for (std::size_t i = 0u; i < index; ++i) {
@@ -277,7 +247,7 @@ int main(int argc, const char * const argv[])
     list.pop_front();
 
     list.push(84199, 2);
-    list.pop(3);
+    list.pop(2);
 
     for (std::size_t i = 0u; i < list.size(); ++i) {
         std::cout << list[i] << "\n";
